@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{
+			  margin: 0;
+			  padding: 0;
+			}
+			#app{
+			  width: 300px;
+			  height: 450px;
+			  border: 2px solid red;
+              margin: 40px auto;
+              margin-top: 50px;
+			  overflow: hidden;
+			  position: relative;
+			}
+			#imgbox{
+				width: 2100px;
+				height: 450px;
+				position: absolute;
+				z-index: 1;
+			}
+			#imgbox li{
+				list-style: none;
+				float: left;
+			}
+			#imgbox li img{
+				width: 300px;
+			    height: 450px;
+			}
+		    #app button{
+		    	width: 20px;
+		    	height: 35px;
+		    	background-color: rgba(0,0,0,0.4);
+		    	position: absolute;
+		    	bottom: 225px;
+		    	z-index: 2;
+		    	border: none;
+		    	font-size: 25px;
+		    	line-height: 35px;
+		    	cursor: pointer;
+		    }
+		    #app #prev{
+		    	left: 10px;
+		    }
+		    #app #next{
+		    	right: 10px;
+		    }
+		    #app #showbutton{
+		    	width: 100px;
+		    	height: 20px;
+		    	position: absolute;
+		    	bottom: 40px;
+		    	left: 100px;
+		    	z-index: 2;
+		    }
+		    #showbutton{
+		    	width: 100px;
+		    	height: 10px;
+		    	position: absolute;
+		    	bottom: 40px;
+		    	left: 100px;
+		    	display: flex;
+		    	justify-content: space-between;		    	
+		    }
+		    #showbutton span{
+		    	width: 10px;
+		    	height: 10px;
+		    	border: 2px solid rgba(0,0,0,0.8);
+		    	border-radius: 50%;
+		    	cursor: pointer;
+		    }
+		    .on{
+		    	background-color: orange;
+		    }
+		</style>
+		<script>
+			window.onload=function(){
+				var box=document.getElementById('app');
+				var list=document.getElementById('imgbox');
+				var prev=document.getElementById('prev');
+				var next=document.getElementById('next');
+				var btns=document.getElementById('showbutton').getElementsByTagName('span');
+				var animated=false;
+				var index=1;
+				var timer;
+				
+				function animate(offset){
+					animated=true;
+					var newleft=parseInt(list.style.left)+offset;
+					var time=500;
+					var interval=10;
+					var speed=offset/(time/interval);
+					
+					function go(){
+						if(speed<0 && parseInt(list.style.left)>newleft || speed>0 && parseInt(list.style.left)<newleft){
+							list.style.left=parseInt(list.style.left)+speed+'px';
+							setTimeout(go,10);
+						}else{
+							animated=false;
+							//list.style.left=newleft+'px';
+					        if(newleft>-300){
+						     list.style.left=-1500+'px';
+					         }
+					        if(newleft<-1500){
+						    list.style.left=-300+'px';
+					         }
+						}
+					};
+					
+					go();
+				}
+				
+				function button(){
+					for(var i=0;i<btns.length;i++){
+						if(btns[i].className=='on'){
+							btns[i].className='';
+						}
+					} 
+					
+					btns[index-1].className='on';
+				};
+				
+				prev.onclick=function(){
+					index-=1
+					if(index<1){
+						index=5
+					}
+					if(!animated){
+						animate(300);
+					}					
+					button()
+				};
+				next.onclick=function(){
+					 index+=1
+					 if(index>5){
+					 	index=1
+					 }
+					if(!animated){
+						animate(-300);
+					}
+					 button()
+				};
+				
+				function play(){
+					timer=setInterval(function(){
+						next.onclick();
+					},3000)
+				};
+				function stop(){
+					clearInterval(timer);
+				}
+				
+				
+				for(var i=0;i<btns.length;i++){
+					(function(i){
+						btns[i].onclick=function(){
+							var clickindex=parseInt(this.getAttribute('index'));
+							var newoffset=300*(index-clickindex);
+							if(!animated){
+							  animate(newoffset);
+							}
+							index=clickindex;
+							button()
+						}
+					})(i)
+				}
+				
+				
+				box.onmouseout=play;
+				box.onmouseover=stop;
+				
+				play()
+			};
+		</script>
+	</head>
+	<body>
+		<section id="app">
+		<ul id="imgbox" style="left:-300px">
+			<li><img src="img/05.jpg"/></li>
+			<li><img src="img/01.jpg"/></li>
+			<li><img src="img/02.jpg"/></li>
+			<li><img src="img/03.jpg"/></li>
+			<li><img src="img/04.jpg"/></li>
+			<li><img src="img/05.jpg"/></li>
+			<li><img src="img/01.jpg"/></li>
+		</ul>
+		<button id="prev">&lang;</button>
+		<button id="next">&rang;</button>
+		<div id="showbutton">
+			<span index=1 class="on"></span>
+			<span index=2></span>
+			<span index=3></span>
+			<span index=4></span>
+			<span index=5></span>
+		</div>
+		</section>
+	</body>
+</html>
